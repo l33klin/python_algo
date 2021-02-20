@@ -66,7 +66,34 @@ class Solution:
         return max_len
 
 
+class SolutionV2:
+    
+    def longestOnes(self, A: list[int], K: int) -> int:
+        max_len = 0
+        left = 0
+        cur_len = 0
+        for i in range(len(A)):
+            if A[i] == 1:
+                cur_len += 1
+                continue
+            else:
+                if K > 0:
+                    K -= 1
+                    cur_len += 1
+                else:
+                    max_len = cur_len if cur_len > max_len else max_len
+                    for j in range(left, i):
+                        left = j + 1
+                        if A[j] == 0:
+                            break
+                        else:
+                            cur_len -= 1
+        max_len = cur_len if cur_len > max_len else max_len
+        return max_len
+                    
+
+
 if __name__ == '__main__':
     la = [1,1,1,0,0,0,1,1,1,1,0]
     k = 2
-    print(Solution().longestOnes(la, k))
+    print(SolutionV2().longestOnes(la, k))
