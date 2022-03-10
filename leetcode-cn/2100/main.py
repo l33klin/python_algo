@@ -13,6 +13,7 @@ from ddt import data, ddt, unpack
 
 
 class Solution:
+    """My first try, Failed"""
     def goodDaysToRobBank(self, security: List[int], time: int) -> List[int]:
         rob_days = []
         if len(security) < time*2 + 1:
@@ -45,6 +46,39 @@ class Solution:
         return rob_days
 
 
+class Solution1:
+    """Solution from: https://leetcode-cn.com/problems/find-good-days-to-rob-the-bank/solution/gong-shui-san-xie-qian-zhui-he-yun-yong-gf604/"""
+    def goodDaysToRobBank(self, security: List[int], time: int) -> List[int]:
+        rob_days = []
+        cp = [0]
+        for i in range(1, len(security)):
+            c = 0
+            if security[i] > security[i - 1]:
+                c = 1
+            elif security[i] < security[i - 1]:
+                c = -1
+            else:
+                c = 0
+            cp.append(c)
+        
+        pre_l = [0]
+        suf_l = [0]
+        for i in cp[1:]:
+            if i == 1:
+                pre_l.append(pre_l[-1] + 1)
+            else:
+                pre_l.append(pre_l[-1])
+            if i == -1:
+                suf_l.append(suf_l[-1] + 1)
+            else:
+                suf_l.append(suf_l[-1])
+        for i in range(time, len(security)-time):
+            if pre_l[i] - pre_l[i - time] == 0 and suf_l[i + time] - suf_l[i] == 0:
+                rob_days.append(i)
+            
+        return rob_days
+
+
 @ddt
 class TestSolution(unittest.TestCase):
     
@@ -52,15 +86,15 @@ class TestSolution(unittest.TestCase):
           ([1, 1, 1, 1, 1], 0, [0, 1, 2, 3, 4]),
           ([1, 2, 3, 4, 5, 6], 2, []),
           ([1], 5, []),
-          ([1, 2, 5, 4, 1, 0, 2, 4, 5, 3, 1, 2, 4, 3, 2, 4, 8], 2, [10, 14]),
           ([1, 1, 1, 1, 1], 0, [0, 1, 2, 3, 4]),
           ([4, 3, 2, 1], 1, []),
+          # ([1, 2, 5, 4, 1, 0, 2, 4, 5, 3, 1, 2, 4, 3, 2, 4, 8], 2, [10, 14]),
           ([1, 2, 5, 4, 1, 0, 2, 4, 5, 3, 1, 2, 4, 3, 2, 4, 8], 2, [5, 10, 14]),
           ([1, 2, 5, 4, 2, 1, 2, 4, 3, 3, 1, 2, 4, 5, 2, 4, 8], 3, [10]),
-          ([7]*100000, 25000, range(25000, 75000)))
+          ([7]*100000, 25000, list(range(25000, 75000))))
     @unpack
     def test_case(self, security, _time, expect):
-        got = Solution().goodDaysToRobBank(security=security, time=_time)
+        got = Solution1().goodDaysToRobBank(security=security, time=_time)
         self.assertEqual(expect, got,
                          "\nexpect: {}\ngot: {}".format(expect, got))
 
