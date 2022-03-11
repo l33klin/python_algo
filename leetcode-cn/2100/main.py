@@ -79,6 +79,24 @@ class Solution1:
         return rob_days
 
 
+class Solution2:
+    """https://leetcode-cn.com/problems/find-good-days-to-rob-the-bank/solution/gua-he-da-jie-yin-xing-de-ri-zi-by-leetc-z6r1/"""
+    def goodDaysToRobBank(self, security: List[int], time: int) -> List[int]:
+        rob_days = []
+        l = len(security)
+        left_days = [0]*l
+        right_days = [0]*l
+        for i in range(1, l):
+            if security[i] <= security[i - 1]:
+                left_days[i] = left_days[i - 1] + 1
+            if security[l - i - 1] <= security[l - i]:
+                right_days[l - i - 1] = right_days[l - i] + 1
+        for i in range(time, len(security)-time):
+            if left_days[i] >= time and right_days[i] >= time:
+                rob_days.append(i)
+        return rob_days
+
+
 @ddt
 class TestSolution(unittest.TestCase):
     
@@ -86,15 +104,13 @@ class TestSolution(unittest.TestCase):
           ([1, 1, 1, 1, 1], 0, [0, 1, 2, 3, 4]),
           ([1, 2, 3, 4, 5, 6], 2, []),
           ([1], 5, []),
-          ([1, 1, 1, 1, 1], 0, [0, 1, 2, 3, 4]),
           ([4, 3, 2, 1], 1, []),
-          # ([1, 2, 5, 4, 1, 0, 2, 4, 5, 3, 1, 2, 4, 3, 2, 4, 8], 2, [10, 14]),
           ([1, 2, 5, 4, 1, 0, 2, 4, 5, 3, 1, 2, 4, 3, 2, 4, 8], 2, [5, 10, 14]),
           ([1, 2, 5, 4, 2, 1, 2, 4, 3, 3, 1, 2, 4, 5, 2, 4, 8], 3, [10]),
           ([7]*100000, 25000, list(range(25000, 75000))))
     @unpack
     def test_case(self, security, _time, expect):
-        got = Solution1().goodDaysToRobBank(security=security, time=_time)
+        got = Solution2().goodDaysToRobBank(security=security, time=_time)
         self.assertEqual(expect, got,
                          "\nexpect: {}\ngot: {}".format(expect, got))
 
